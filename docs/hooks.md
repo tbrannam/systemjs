@@ -25,12 +25,15 @@ In addition, some hooks are Promise-based, so Promise chaining also needs to be 
 
 Used to populate the `import.meta` for a module, available at `_context.meta` in the [System.register module format](system-register.md).
 
-The default implementation is:
+The default implementation provides `import.meta.url` and a synchronous `import.meta.resolve`:
 
 ```js
-System.constructor.prototype.createContext = function (url) {
+System.constructor.prototype.createContext = function (parentId) {
   return {
-    url
+    url: parentId,
+    resolve: function (id, parentUrl) {
+      return System.resolve(id, parentUrl || parentId);
+    }
   };
 };
 ```

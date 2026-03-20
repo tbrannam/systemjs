@@ -65,19 +65,30 @@ This is useful for referencing assets by URL in a way that is supported in many 
 const assetUrl = new URL('./asset.ext', import.meta.url);
 ```
 
-#### import.meta.resolve: (id, parentUrl?) => Promise<String>
+#### import.meta.resolve: (id, parentUrl?) => String
 
-> `import.meta.resolve` currently has no specification or browser implementation and may still change.
-
-`_context.meta.resolve` implements `import.meta.resolve` similarly to Node.js.
+`_context.meta.resolve` implements `import.meta.resolve` matching the behavior of Node.js (v18.19.0+, v20.0.0+) and browsers, returning a string synchronously.
 
 This can be used to resolve import map resolutions or assets:
 
 ```js
-const resolvedDep = await import.meta.resolve('dep');
-const localAsset = await import.meta.resolve('./asset.ext');
-const depPath = await import.meta.resolve('dep/');
+const resolvedDep = import.meta.resolve('dep');
+const localAsset = import.meta.resolve('./asset.ext');
+const depPath = import.meta.resolve('dep/');
 ```
+
+> **Migration from v6:** In SystemJS 6.x, `import.meta.resolve` returned a `Promise<String>`. In v7, it returns a `String` synchronously, matching current Node.js and browser implementations. If you need the old async behavior, you can restore it with a hook:
+> ```js
+> var createContext = System.constructor.prototype.createContext;
+> System.constructor.prototype.createContext = function (parentId) {
+>   var ctx = createContext.call(this, parentId);
+>   var syncResolve = ctx.resolve;
+>   ctx.resolve = function (id, parentUrl) {
+>     return Promise.resolve(syncResolve(id, parentUrl));
+>   };
+>   return ctx;
+> };
+> ```
 
 #### Top-level await
 
