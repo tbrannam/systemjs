@@ -12,6 +12,7 @@ permissions:
 jobs:
   test:
     runs-on: windows-latest
+    timeout-minutes: 30
     strategy:
       matrix:
         chrome: [
@@ -37,6 +38,6 @@ jobs:
         run: npm ci
       - name: Chomp Test
         run: chomp test
-        env: 
+        env:
           CI_BROWSER: ${{ steps.setup-chrome.outputs.chrome-path }}
-          CI_BROWSER_FLAGS:
+          CI_BROWSER_FLAGS: --headless=new --no-first-run --no-default-browser-check --user-data-dir=${{ runner.temp }}\chrome-profile
