@@ -26,7 +26,7 @@ Don't change `version` in `package.json` or add entries to `CHANGELOG.md`; the r
 
 ## Building and testing
 
-Task running is handled by [Chomp](https://chompbuild.com). Use the Node.js version in `.nvmrc` (currently 22) with the npm it bundles. `npm ci` refuses to run on other Node.js versions, so the lockfile is always written by the same toolchain CI uses.
+Task running is handled by [Chomp](https://chompbuild.com). Use the exact Node.js version in `.nvmrc` with the npm it bundles. `npm ci` refuses to run on other Node.js versions, so the lockfile is always written by the same toolchain CI uses.
 
 ```sh
 nvm use          # or fnm use / volta, any tool that reads .nvmrc
@@ -35,6 +35,8 @@ npm ci
 chomp build   # writes dist/ (not committed to git)
 chomp test
 ```
+
+To upgrade Node.js (for example for a security release), change `.nvmrc` in a `ci:` pull request; every workflow reads it. Keep the major in line with `devEngines` in `package.json`.
 
 `package-lock.json` is committed. If you change dependencies, update them with `npm install <pkg>` and commit the updated lockfile in the same PR.
 
