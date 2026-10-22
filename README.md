@@ -32,7 +32,7 @@ Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com
 
 #### 1. s.js minimal production loader
 
-The minimal [2.8KB s.js production loader](dist/s.min.js) includes the following features:
+The minimal [2.8KB s.js production loader](https://unpkg.com/systemjs/dist/s.min.js) includes the following features:
 
 * Loads `System.register` modules, the CSP-compatible [SystemJS module format](docs/system-register.md).
 * Support for loading bare specifier names with [import maps](docs/import-maps.md) via `<script type="systemjs-importmap">`.
@@ -40,7 +40,7 @@ The minimal [2.8KB s.js production loader](dist/s.min.js) includes the following
 
 #### 2. system.js loader
 
-The [4.2KB system.js loader](dist/system.min.js) adds the following features in addition to the `s.js` features above:
+The [4.2KB system.js loader](https://unpkg.com/systemjs/dist/system.min.js) adds the following features in addition to the `s.js` features above:
 
 * [Tracing hooks](docs/hooks.md##onloaderr-id-deps-iserrsource-sync) and [registry deletion API](docs/api.md#registry) for reloading workflows.
 * Supports loading Wasm, CSS and JSON [module types](docs/module-types.md).
@@ -48,7 +48,7 @@ The [4.2KB system.js loader](dist/system.min.js) adds the following features in 
 
 #### 3. system-node.cjs loader
 
-The [system-node.cjs](/dist/system-node.cjs) loader is a version of SystemJS build designed to run in Node.js, typically for workflows where System modules need to be executed on the server like SSR. It has the following features:
+The [system-node.cjs](https://unpkg.com/systemjs/dist/system-node.cjs) loader is a version of SystemJS build designed to run in Node.js, typically for workflows where System modules need to be executed on the server like SSR. It has the following features:
 
 * Loading System modules from disk (via `file://` urls) or the network, with included caching that respects the Content-Type header.
 * Import Maps (via the `applyImportMap` api).
@@ -59,16 +59,16 @@ _Loading CommonJS modules is not currently supported in this loader and likely w
 
 #### Extras
 
-The following [pluggable extras](dist/extras) can be dropped in with either the s.js or system.js loader:
+The following [pluggable extras](https://unpkg.com/browse/systemjs/dist/extras/) can be dropped in with either the s.js or system.js loader:
 
-* [AMD loading](dist/extras/amd.js) support (through `Window.define` which is created).
-* [Named register](dist/extras/named-register.js) supports `System.register('name', ...)` named bundles which can then be imported as `System.import('name')` (as well as AMD named define support)
-* [Dynamic import maps](dist/extras/dynamic-import-maps.js) support. This is currently a _potential_ new standard [feature](https://github.com/guybedford/import-maps-extensions#lazy-loading-of-import-maps).
+* [AMD loading](https://unpkg.com/systemjs/dist/extras/amd.js) support (through `Window.define` which is created).
+* [Named register](https://unpkg.com/systemjs/dist/extras/named-register.js) supports `System.register('name', ...)` named bundles which can then be imported as `System.import('name')` (as well as AMD named define support)
+* [Dynamic import maps](https://unpkg.com/systemjs/dist/extras/dynamic-import-maps.js) support. This is currently a _potential_ new standard [feature](https://github.com/guybedford/import-maps-extensions#lazy-loading-of-import-maps).
 
 The following extras are included in system.js loader by default, and can be added to the s.js loader for a smaller tailored footprint:
 
-* [Global loading](dist/extras/global.js) support for loading global scripts and detecting the defined global as the default export. Useful for loading common library scripts from CDN like `System.import('//unpkg.com/lodash')`.
-* [Module Types](dist/extras/module-types.js) `.css`, `.wasm`, `.json` [module type](docs/module-types.md) loading support in line with the existing modules specifications.
+* [Global loading](https://unpkg.com/systemjs/dist/extras/global.js) support for loading global scripts and detecting the defined global as the default export. Useful for loading common library scripts from CDN like `System.import('//unpkg.com/lodash')`.
+* [Module Types](https://unpkg.com/systemjs/dist/extras/module-types.js) `.css`, `.wasm`, `.json` [module type](docs/module-types.md) loading support in line with the existing modules specifications.
 
 Since all loader features are hookable, custom extensions can be easily made following the same approach as the bundled extras. See the [hooks documentation](docs/hooks.md) for more information.
 

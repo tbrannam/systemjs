@@ -2,9 +2,12 @@ name: CI
 
 on:
   push:
-    branches: main
+    branches: [main, 7.x]
   pull_request:
-    branches: main
+    branches: [main, 7.x]
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -15,19 +18,22 @@ jobs:
           'latest'
         ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Setup Chomp
         uses: guybedford/chomp-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
       - name: Setup Chrome ${{ matrix.chrome }}
         uses: browser-actions/setup-chrome@latest
         with:
           chrome-version: ${{ matrix.chrome }}
-      - name: npm install
-        run: npm install
+      - name: npm ci
+        run: npm ci
       - name: Chomp Test
         run: chomp test
         env: 
