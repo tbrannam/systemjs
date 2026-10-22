@@ -67,14 +67,7 @@ Do these in order, after the PR that adds the release workflow has merged. Each 
 
 1. **Apply repository settings:** `.github/repo-settings/apply.sh --apply` (see above). This creates the rulesets, the merge settings and the `npm-publish` environment (deployments allowed from `main` only).
 
-2. **Bootstrap tag:** release-please starts from 6.15.1, which was published without a tag.
-
-   ```sh
-   git tag -a 6.15.1 240a07038fb208306daecd9ab46dac5bf41d8ffb -m "6.15.1"
-   git push upstream 6.15.1
-   ```
-
-3. **`RELEASE_PLEASE_TOKEN` secret:** Release PRs opened with the default `GITHUB_TOKEN` don't trigger CI, so release-please uses its own token. Use either:
+2. **`RELEASE_PLEASE_TOKEN` secret:** Release PRs opened with the default `GITHUB_TOKEN` don't trigger CI, so release-please uses its own token. Use either:
    - a GitHub App installed on this repo only, with Contents, Pull requests and Issues set to read & write, or
    - a fine-grained personal access token scoped to `systemjs/systemjs`, with the same permissions and an expiry date you track.
 
@@ -82,17 +75,17 @@ Do these in order, after the PR that adds the release workflow has merged. Each 
    gh secret set RELEASE_PLEASE_TOKEN --repo systemjs/systemjs
    ```
 
-   Without the secret, the workflow falls back to `GITHUB_TOKEN`. Releases still work, but CI won't run on the Release PR.
+   Without the secret, the workflow falls back to `GITHUB_TOKEN`. Releases still work, but CI won't run on the Release PR, and **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** must be enabled.
 
-4. **pkg.pr.new:** install the GitHub App from <https://github.com/apps/pkg-pr-new> and grant it access to `systemjs/systemjs` only.
+3. **pkg.pr.new:** install the GitHub App from <https://github.com/apps/pkg-pr-new> and grant it access to `systemjs/systemjs` only.
 
-5. **npm trusted publisher:** on npmjs.com go to the `systemjs` package → **Settings** → **Trusted Publisher** → **GitHub Actions**, and enter:
+4. **npm trusted publisher:** on npmjs.com go to the `systemjs` package → **Settings** → **Trusted Publisher** → **GitHub Actions**, and enter:
    - Organization or user: `systemjs`
    - Repository: `systemjs`
    - Workflow filename: `release.yml`
    - Environment name: `npm-publish`
 
-6. **Archive the stale `6.x` branch** (it stopped at 6.8.0; 6.x now lives on `main`):
+5. **Archive the stale `6.x` branch** (it stopped at 6.8.0; 6.x now lives on `main`):
 
    ```sh
    sha=$(gh api repos/systemjs/systemjs/git/ref/heads/6.x --jq .object.sha)
@@ -100,9 +93,9 @@ Do these in order, after the PR that adds the release workflow has merged. Each 
    gh api -X DELETE repos/systemjs/systemjs/git/refs/heads/6.x
    ```
 
-7. **Require CI checks:** once the `test` (CI) and `lint-title` (PR) checks have run on at least one PR, add them to `protect-main.json` and `protect-7x.json` in a PR. Use a `required_status_checks` rule with `strict_required_status_checks_policy: false`. After it merges, re-apply the settings.
+6. **Require CI checks:** once the `test` (CI) and `lint-title` (PR) checks have run on at least one PR, add them to `protect-main.json` and `protect-7x.json` in a PR. Use a `required_status_checks` rule with `strict_required_status_checks_policy: false`. After it merges, re-apply the settings.
 
-8. **After the first successful publish from CI:**
+7. **After the first successful publish from CI:**
    - confirm the provenance badge on npmjs.com
    - in the package settings, set **Publishing access** to "Require two-factor authentication and disallow tokens"
    - revoke old automation tokens (`npm token list`, then `npm token revoke <id>`)
