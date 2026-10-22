@@ -88,9 +88,8 @@ jobs:
       - run: chomp test:internal
       - run: chomp test:node
       - run: node .github/scripts/verify-release.mjs "$TAG"
-      # Trusted publishing (OIDC) needs npm 11.5.1 or later. Upgrade only for
-      # the publish step so install/build/test match the other workflows.
-      - run: npm install -g npm@11
+      # Trusted publishing (OIDC) needs npm 11.5.1+, which the Node.js in
+      # .nvmrc bundles; devEngines makes npm ci fail if it doesn't.
       - name: npm publish
         run: |
           if [ "$DRY_RUN" = "true" ]; then

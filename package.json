@@ -33,12 +33,12 @@
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "^22",
+      "version": "^24",
       "onFail": "error"
     },
     "packageManager": {
       "name": "npm",
-      "version": "^10.9.0 || ^11.5.1",
+      "version": "^11.5.1",
       "onFail": "error"
     }
   },
@@ -67,5 +67,8 @@
   "collective": {
     "type": "opencollective",
     "url": "https://opencollective.com/systemjs"
+  },
+  "allowScripts": {
+    "fsevents": false
   }
 }
