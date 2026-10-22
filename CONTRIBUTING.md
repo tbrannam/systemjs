@@ -38,6 +38,8 @@ chomp test
 
 To upgrade Node.js (for example for a security release), change `.nvmrc` in a `ci:` pull request; every workflow reads it. Keep the major in line with `devEngines` in `package.json`.
 
+The `.nvmrc` version is the **build toolchain only**. It says nothing about which Node.js versions SystemJS users need: `dist/` is identical whatever Node.js builds it, the browser builds target ES5, and the `node-compat` CI job runs the built `dist/system-node.cjs` on Node.js 10 through 24. Don't drop a Node.js version from that matrix without treating it as a breaking change.
+
 `package-lock.json` is committed. If you change dependencies, update them with `npm install <pkg>` and commit the updated lockfile in the same PR.
 
 ## Trying a build
