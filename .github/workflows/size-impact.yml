@@ -2,18 +2,27 @@ name: size-impact
 
 on: pull_request_target
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   size-impact:
+    # Only run for branches pushed to this repository; fork PRs get no report.
+    if: github.event.pull_request.head.repo.full_name == github.repository
     strategy:
       matrix:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     name: size impact
     env:
       CI: true
     steps:
       - name: Setup git
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: Setup node
         uses: actions/setup-node@v7
         with:
