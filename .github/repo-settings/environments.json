@@ -1,0 +1,6 @@
+[
+  {
+    "name": "npm-publish",
+    "deployment_branches": ["main"]
+  }
+]

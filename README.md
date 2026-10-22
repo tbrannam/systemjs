@@ -242,6 +242,8 @@ Third party libraries and npm packages may be used as long as they are published
 
 Project bug fixes and changes are welcome for discussion, provided the project footprint remains minimal.
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for branch targeting, pull request title conventions and preview builds, and [RELEASING.md](RELEASING.md) for how releases are made.
+
 Task running is handled by Chomp (https://chompbuild.com).
 
 To run the tests:
