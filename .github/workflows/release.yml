@@ -34,14 +34,26 @@ jobs:
       issues: write
       pull-requests: write
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
+      release_created: ${{ steps.release.outputs.release_created || steps.retry.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name || steps.retry.outputs.tag_name }}
     steps:
       - id: release
+        # GitHub's GraphQL API intermittently fails release-please's commit
+        # query; release-please is idempotent, so one retry is safe.
+        continue-on-error: true
         uses: googleapis/release-please-action@v5
         with:
           # A separate token so that CI runs on the Release PR; GITHUB_TOKEN
           # events don't trigger workflows.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+      - if: steps.release.outcome == 'failure'
+        run: sleep 30
+      - id: retry
+        if: steps.release.outcome == 'failure'
+        uses: googleapis/release-please-action@v5
+        with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
@@ -65,10 +77,8 @@ jobs:
           ref: refs/tags/${{ env.TAG }}
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
-      # Trusted publishing (OIDC) needs npm 11.5.1 or later.
-      - run: npm install -g npm@11
       - name: Setup Chomp
         uses: guybedford/chomp-action@v1
         env:
@@ -78,6 +88,9 @@ jobs:
       - run: chomp test:internal
       - run: chomp test:node
       - run: node .github/scripts/verify-release.mjs "$TAG"
+      # Trusted publishing (OIDC) needs npm 11.5.1 or later. Upgrade only for
+      # the publish step so install/build/test match the other workflows.
+      - run: npm install -g npm@11
       - name: npm publish
         run: |
           if [ "$DRY_RUN" = "true" ]; then
