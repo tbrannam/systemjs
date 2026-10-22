@@ -77,10 +77,8 @@ jobs:
           ref: refs/tags/${{ env.TAG }}
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
-      # Trusted publishing (OIDC) needs npm 11.5.1 or later.
-      - run: npm install -g npm@11
       - name: Setup Chomp
         uses: guybedford/chomp-action@v1
         env:
@@ -90,6 +88,9 @@ jobs:
       - run: chomp test:internal
       - run: chomp test:node
       - run: node .github/scripts/verify-release.mjs "$TAG"
+      # Trusted publishing (OIDC) needs npm 11.5.1 or later. Upgrade only for
+      # the publish step so install/build/test match the other workflows.
+      - run: npm install -g npm@11
       - name: npm publish
         run: |
           if [ "$DRY_RUN" = "true" ]; then
