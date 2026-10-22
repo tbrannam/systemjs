@@ -1,0 +1,67 @@
+# PR title checks and pkg.pr.new preview builds. See CONTRIBUTING.md.
+
+name: PR
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    branches: [main, 7.x]
+  # 7.x is not published to npm; every commit gets a pkg.pr.new build instead.
+  push:
+    branches: [7.x]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-title:
+    name: lint-title
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            perf
+            revert
+            docs
+            refactor
+            test
+            build
+            ci
+            chore
+      - name: Reject breaking changes on main
+        if: github.base_ref == 'main'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if printf '%s\n' "$TITLE" | grep -Eq '^[a-z]+(\([^)]*\))?!:' ||
+             printf '%s\n' "$BODY" | grep -Eq '^BREAKING[ -]CHANGE:'; then
+            echo "::error::Breaking changes are not accepted on main. Target the 7.x branch instead (see CONTRIBUTING.md)."
+            exit 1
+          fi
+
+  preview:
+    if: github.event_name == 'push' || github.event.action != 'edited'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - name: Setup Chomp
+        uses: guybedford/chomp-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: npm ci
+      - run: chomp build
+      # --compact URLs need package.json "repository" to match this repo, which is only true upstream.
+      - run: npx pkg-pr-new publish --comment=update ${{ github.repository == 'systemjs/systemjs' && '--compact' || '' }}

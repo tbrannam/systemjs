@@ -5,12 +5,12 @@ SystemJS supports loading modules that are in the following formats:
 | Module Format | s.js | system.js | File Extension |
 | ------------- | ---- | --------- | -------------- |
 | [System.register](/docs/system-register.md) | :heavy_check_mark: | :heavy_check_mark: | * |
-| [JSON Modules](https://github.com/whatwg/html/pull/4407) | [Module Types extra](/dist/extras/module-types.js) | :heavy_check_mark: | *.json |
-| [CSS Modules](https://github.com/w3c/webcomponents/blob/gh-pages/proposals/css-modules-v1-explainer.md) | [Module Types extra](/dist/extras/module-types.js) | :heavy_check_mark: | *.css |
-| [Web Assembly](https://github.com/WebAssembly/esm-integration/tree/master/proposals/esm-integration) | [Module Types extra](/dist/extras/module-types.js) | :heavy_check_mark: | *.wasm |
-| Global variable | [global extra](/dist/extras/global.js) | :heavy_check_mark: | * |
-| [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) | [AMD extra](/dist/extras/amd.js) | [AMD extra](/dist/extras/amd.js) | * |
-| [UMD](https://github.com/umdjs/umd) | [AMD extra](/dist/extras/amd.js) | [AMD extra](/dist/extras/amd.js) | * |
+| [JSON Modules](https://github.com/whatwg/html/pull/4407) | [Module Types extra](https://unpkg.com/systemjs/dist/extras/module-types.js) | :heavy_check_mark: | *.json |
+| [CSS Modules](https://github.com/w3c/webcomponents/blob/gh-pages/proposals/css-modules-v1-explainer.md) | [Module Types extra](https://unpkg.com/systemjs/dist/extras/module-types.js) | :heavy_check_mark: | *.css |
+| [Web Assembly](https://github.com/WebAssembly/esm-integration/tree/master/proposals/esm-integration) | [Module Types extra](https://unpkg.com/systemjs/dist/extras/module-types.js) | :heavy_check_mark: | *.wasm |
+| Global variable | [global extra](https://unpkg.com/systemjs/dist/extras/global.js) | :heavy_check_mark: | * |
+| [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) | [AMD extra](https://unpkg.com/systemjs/dist/extras/amd.js) | [AMD extra](https://unpkg.com/systemjs/dist/extras/amd.js) | * |
+| [UMD](https://github.com/umdjs/umd) | [AMD extra](https://unpkg.com/systemjs/dist/extras/amd.js) | [AMD extra](https://unpkg.com/systemjs/dist/extras/amd.js) | * |
 
 ### File Extension Limitations
 

@@ -45,6 +45,7 @@ function setBrowserTimeout () {
     else {
       console.log('Retrying...');
       start();
+      setBrowserTimeout();
     }
   }, 20000);
 }

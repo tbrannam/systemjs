@@ -169,7 +169,7 @@ To fix this warning, you may either use [import maps](/docs/import-maps.md) or [
 
 SystemJS Error #9 occurs when the global `define` function was called with invalid arguments.
 
-`window.define` is a global variable available in [AMD environments](https://en.wikipedia.org/wiki/Asynchronous_module_definition), and is created by the SystemJS [amd.js extra](https://github.com/systemjs/systemjs/blob/master/dist/extras/amd.js). It is a function called by modules in AMD or UMD format.
+`window.define` is a global variable available in [AMD environments](https://en.wikipedia.org/wiki/Asynchronous_module_definition), and is created by the SystemJS [amd.js extra](https://unpkg.com/systemjs/dist/extras/amd.js). It is a function called by modules in AMD or UMD format.
 
 With SystemJS, the following calls to define() are valid:
 
@@ -332,7 +332,7 @@ Note that this error also can occur for external import maps (those with `src=""
 
 ### Include named-register.js for full named define support
 
-SystemJS Warning W6 occurs when a named [AMD module](https://en.wikipedia.org/wiki/Asynchronous_module_definition) is registered with SystemJS without having included the [SystemJS named-register.js extra](https://github.com/systemjs/systemjs/blob/master/dist/extras/named-register.js).
+SystemJS Warning W6 occurs when a named [AMD module](https://en.wikipedia.org/wiki/Asynchronous_module_definition) is registered with SystemJS without having included the [SystemJS named-register.js extra](https://unpkg.com/systemjs/dist/extras/named-register.js).
 
 An AMD module is one that calls the global `define()` function to register itself as a module. A named AMD module is one that calls `define()` with a string name as its first argument.
 
