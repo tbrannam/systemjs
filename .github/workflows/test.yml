@@ -40,4 +40,4 @@ jobs:
         run: chomp test
         env:
           CI_BROWSER: ${{ steps.setup-chrome.outputs.chrome-path }}
-          CI_BROWSER_FLAGS: --headless=new --no-first-run --no-default-browser-check --user-data-dir=${{ runner.temp }}\chrome-profile
+          CI_BROWSER_FLAGS: --headless=new --no-sandbox --no-first-run --no-default-browser-check --user-data-dir=${{ runner.temp }}\chrome-profile
