@@ -2,6 +2,7 @@
 #
 # Applies the reviewed repository settings to GitHub:
 #   .github/repo-settings/repository.json    merge settings (PATCH /repos/{repo})
+#   .github/repo-settings/actions.json       Actions token default + fork PR approval policy
 #   .github/repo-settings/environments.json  deployment environments + branch policies
 #   .github/rulesets/*.json                  branch/tag rulesets (matched by name)
 #
@@ -27,7 +28,7 @@ while [ $# -gt 0 ]; do
     --repo) REPO="$2"; shift 2 ;;
     --apply) APPLY=1; shift ;;
     --yes) YES=1; shift ;;
-    -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "Unknown argument: $1" >&2; exit 2 ;;
   esac
 done
@@ -108,6 +109,20 @@ if ! compare "$current" "$want" && [ "$APPLY" = 1 ]; then
 fi
 
 echo
+echo "== Actions permissions (.github/repo-settings/actions.json)"
+for setting in workflow fork_pr_contributor_approval; do
+  endpoint="repos/$REPO/actions/permissions/${setting//_/-}"
+  want="$(jq ".$setting" "$HERE/actions.json")"
+  echo "-- $setting"
+  current="$(gh api "$endpoint" | jq --argjson want "$want" \
+    'with_entries(select(.key as $k | $want | has($k)))')"
+  if ! compare "$current" "$want" && [ "$APPLY" = 1 ]; then
+    gh api -X PUT "$endpoint" --input - <<<"$want" >/dev/null
+    echo "  applied"
+  fi
+done
+
+echo
 echo "== Rulesets (.github/rulesets/*.json)"
 existing="$(gh api "repos/$REPO/rulesets?includes_parents=false" --paginate | jq -s 'add // []')"
 managed_names="[]"
@@ -146,19 +161,28 @@ i=0
 while [ "$i" -lt "$count" ]; do
   env_name="$(jq -r ".[$i].name" "$HERE/environments.json")"
   want_branches="$(jq -c ".[$i].deployment_branches | sort" "$HERE/environments.json")"
-  want="$(jq -n --argjson b "$want_branches" \
-    '{ deployment_branch_policy: { protected_branches: false, custom_branch_policies: true }, branches: $b }')"
+  want_reviewers="$(jq -c ".[$i].reviewers // [] | sort" "$HERE/environments.json")"
+  want="$(jq -n --argjson b "$want_branches" --argjson r "$want_reviewers" \
+    '{ deployment_branch_policy: { protected_branches: false, custom_branch_policies: true }, branches: $b, reviewers: $r }')"
   echo "-- $env_name"
   if env_json="$(gh api "repos/$REPO/environments/$env_name" 2>/dev/null)"; then
     branches="$(gh api "repos/$REPO/environments/$env_name/deployment-branch-policies" \
       | jq -c '[ .branch_policies[] | select((.type // "branch") == "branch") | .name ] | sort')"
     current="$(jq --argjson b "$branches" \
-      '{ deployment_branch_policy: (.deployment_branch_policy // null), branches: $b }' <<<"$env_json")"
+      '{ deployment_branch_policy: (.deployment_branch_policy // null), branches: $b,
+         reviewers: ([ .protection_rules[]? | select(.type == "required_reviewers") | .reviewers[]
+                       | .reviewer.login // .reviewer.slug ] | sort) }' <<<"$env_json")"
   else
-    current='{"deployment_branch_policy": null, "branches": [], "missing": true}'
+    current='{"deployment_branch_policy": null, "branches": [], "reviewers": [], "missing": true}'
   fi
   if ! compare "$current" "$want" && [ "$APPLY" = 1 ]; then
-    jq -n '{ deployment_branch_policy: { protected_branches: false, custom_branch_policies: true } }' \
+    reviewer_ids="[]"
+    for login in $(jq -r '.[]' <<<"$want_reviewers"); do
+      reviewer_ids="$(jq --argjson id "$(gh api "users/$login" --jq .id)" \
+        '. + [{ type: "User", id: $id }]' <<<"$reviewer_ids")"
+    done
+    jq -n --argjson r "$reviewer_ids" \
+      '{ deployment_branch_policy: { protected_branches: false, custom_branch_policies: true }, reviewers: $r }' \
       | gh api -X PUT "repos/$REPO/environments/$env_name" --input - >/dev/null
     have="$(gh api "repos/$REPO/environments/$env_name/deployment-branch-policies" \
       | jq -c '[ .branch_policies[] | .name ]')"

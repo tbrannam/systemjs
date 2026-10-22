@@ -1,6 +1,7 @@
 [
   {
     "name": "npm-publish",
-    "deployment_branches": ["main"]
+    "deployment_branches": ["main"],
+    "reviewers": ["tbrannam"]
   }
 ]

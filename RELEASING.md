@@ -40,11 +40,12 @@ Set the repository variable `NPM_PUBLISH_DRY_RUN` to `true` (**Settings → Secr
 
 ## Repository settings as code
 
-Branch protection, merge settings and the `npm-publish` environment are described in:
+Branch protection, merge settings, Actions permissions and the `npm-publish` environment are described in:
 
 - `.github/rulesets/*.json`: rulesets for `main`, `7.x` and release tags
 - `.github/repo-settings/repository.json`: merge settings (squash for `main`, merge commits allowed only so `main` can be merged into `7.x`)
-- `.github/repo-settings/environments.json`: deployment environments and allowed branches
+- `.github/repo-settings/actions.json`: Actions settings (workflow `GITHUB_TOKEN` is read-only unless a workflow asks for more; workflows from every outside contributor's PR need approval before they run)
+- `.github/repo-settings/environments.json`: deployment environments, allowed branches and required reviewers
 
 To change a setting:
 
@@ -65,7 +66,7 @@ Rollback: `gh api -X DELETE repos/systemjs/systemjs/rulesets/<id>` for a ruleset
 
 Do these in order, after the PR that adds the release workflow has merged. Each step changes `systemjs/systemjs` or the `systemjs` npm package, so record who did it and when in the tracking issue.
 
-1. **Apply repository settings:** `.github/repo-settings/apply.sh --apply` (see above). This creates the rulesets, the merge settings and the `npm-publish` environment (deployments allowed from `main` only).
+1. **Apply repository settings:** `.github/repo-settings/apply.sh --apply` (see above). This creates the rulesets, the merge settings, the Actions permissions and the `npm-publish` environment (deployments allowed from `main` only, each one approved by a required reviewer).
 
 2. **`RELEASE_PLEASE_TOKEN` secret:** Release PRs opened with the default `GITHUB_TOKEN` don't trigger CI, so release-please uses its own token. Use either:
    - a GitHub App installed on this repo only, with Contents, Pull requests and Issues set to read & write, or
